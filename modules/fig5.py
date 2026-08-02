@@ -2,7 +2,7 @@
 for DAPPr vs EDL (ResNet-18, paper config: lr 5e-4, bs 64, 100 epochs, lamb 5e-3 warmup).
 The paper does not state the exact data sizes in text; we use 1K/2K/5K/10K/25K/50K and report
 mean EU (K/alpha0) and test accuracy on the test set."""
-import json, functools
+import json, functools, copy
 import torch
 from torch.optim import AdamW
 from timm.scheduler.cosine_lr import CosineLRScheduler
