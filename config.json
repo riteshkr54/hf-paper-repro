@@ -1,6 +1,1 @@
-{
-  "task": "claim1_audit",
-  "description": "Claim 1 audit: numerical verification of Proposition 1 and the DAPPr loss/uncertainty implementations",
-  "device": "cuda:0",
-  "seed": 0
-}
+{"task":"fedl","dataset":"CIFAR-10","device":"cuda:1","seed":42,"epochs":100,"bs":64,"lr":5e-4}
