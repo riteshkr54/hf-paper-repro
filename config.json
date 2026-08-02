@@ -1,0 +1,6 @@
+{
+  "task": "claim1_audit",
+  "description": "Claim 1 audit: numerical verification of Proposition 1 and the DAPPr loss/uncertainty implementations",
+  "device": "cuda:0",
+  "seed": 0
+}
