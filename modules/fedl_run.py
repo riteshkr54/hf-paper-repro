@@ -132,14 +132,20 @@ def run(config):
     _, conf_aupr, brier = fedl_uq.conf_calibration(model, testloader, device)
     _, ood_aupr = fedl_uq.ood_detection(model, testloader, ood1, ood2, device)
     # ood_detection returns [ {AU,EU} per ood set ]; DAPPr paper reports OOD AUPR via EU
+    ood_au_aupr = {name: round(float(d["AU"]) * 100, 4) for name, d in zip(ood_names, ood_aupr)}
     ood_eu_aupr = {name: round(float(d["EU"]) * 100, 4) for name, d in zip(ood_names, ood_aupr)}
     conf_eu_aupr = round(float(conf_aupr["EU"]) * 100, 4)
+    # F-EDL paper reports OOD AUPR as max(AU, EU); DAPPr paper's Table 1 F-EDL column uses those
+    ood_best_aupr = {name: round(max(d["AU"], d["EU"]) * 100, 4) for name, d in zip(ood_names, ood_aupr)}
 
     summary = {"config": config, "method": "F-EDL", "dataset": ID_dataset, "seed": seed,
                "test_acc": round(float(top1_acc), 4),
                "Conf_AUPR_EU": conf_eu_aupr,
                "Conf_AUPR_AU": round(float(conf_aupr["AU"]) * 100, 4),
-               "Brier": round(float(brier), 4), **{f"{k}_AUPR_EU": v for k, v in ood_eu_aupr.items()}}
+               "Brier": round(float(brier), 4),
+               **{f"{k}_AUPR_EU": v for k, v in ood_eu_aupr.items()},
+               **{f"{k}_AUPR_AU": v for k, v in ood_au_aupr.items()},
+               **{f"{k}_AUPR_max": v for k, v in ood_best_aupr.items()}}
     print("\nFINAL_RESULTS_JSON\n" + json.dumps(summary, indent=2) + "\nEND_RESULTS_JSON", flush=True)
     os.makedirs("outs", exist_ok=True)
     with open(f"outs/F-EDL_{ID_dataset}_seed{seed}.json", "w") as f:
