@@ -1,1 +1,1 @@
-{"task":"fgvc","dataset":"CUB","method":"DAPPr","device":"cuda:1","seed":42,"epochs":200,"bs":256,"lr":2e-3,"lamb":2e-4,"lamb_schedule":"warmup"}
+{"task":"fgvc","dataset":"CUB","method":"DAPPr","device":"cuda:1","seed":42,"epochs":200,"bs":128,"lr":2e-3,"lamb":2e-4,"lamb_schedule":"warmup"}
