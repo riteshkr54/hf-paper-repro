@@ -37,7 +37,7 @@ def run(config):
             opt = AdamW(model.parameters(), lr=5e-4, weight_decay=1e-4)
             scheduler = CosineLRScheduler(opt, t_initial=epochs, warmup_t=10, lr_min=1e-5,
                                           warmup_lr_init=1e-6, cycle_decay=0.1)
-            best_acc, best_metrics = 0.0, None
+            best_acc, best_metrics, best_state = 0.0, None, None
             for ep in range(epochs):
                 model.train()
                 factor = min(1.0, ep / 10.0)
@@ -58,7 +58,9 @@ def run(config):
                         best_acc = val_acc
                         best_metrics = evaluate_test_metrics(
                             model, test_dl, *ood_loaders, ood_names=ood_names, uncertainty_func=unc_func)
-            # mean epistemic uncertainty (K/alpha0) on the test set (Sec. 4.4)
+                        best_state = copy.deepcopy(model.state_dict())
+            # mean epistemic uncertainty (K/alpha0) on the test set, best-val model (Sec. 4.4)
+            model.load_state_dict(best_state)
             logits, _ = _get_logits(model, test_dl)
             alpha = torch.nn.functional.softplus(logits) + 1
             eu_mean = (100 / alpha.sum(1)).mean().item()          # K=100
