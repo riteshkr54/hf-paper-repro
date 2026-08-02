@@ -1,1 +1,1 @@
-{"task":"cifar","dataset":"cifar100","method":"DAPPr","device":"cuda:0","seed":42,"epochs":100,"bs":64,"lr":5e-4,"lamb":5e-3,"lamb_schedule":"warmup"}
+{"task":"cifar","dataset":"cifar100","method":"DAPPr","device":"cuda:0","seed":42,"epochs":100,"bs":64,"lr":5e-4,"lamb":2e-4,"lamb_schedule":"warmup"}
