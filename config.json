@@ -1,6 +1,1 @@
-{
-  "task": "claim1_audit",
-  "description": "Claim 1 audit: numerical verification of Proposition 1 and the DAPPr loss/uncertainty implementations",
-  "device": "cuda:0",
-  "seed": 0
-}
+{"task":"fig5","device":"cuda:0","seed":42,"epochs":100,"bs":64,"lamb":5e-3,"sizes":[1000,2000,5000,10000,25000,50000],"methods":["DAPPr","EDL"]}
