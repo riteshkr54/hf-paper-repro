@@ -165,7 +165,6 @@ def run(config):
     train_args = TrainingArguments(**_ta)
     collator = dappr_data_collator(tokenizer, max_len=max_len)
     if method == "CE":
-        collator = DataCollatorForSeq2Seq(tokenizer, padding="max_length", max_length=max_len)
         trainer = Trainer(model=model, args=train_args, train_dataset=train,
                           eval_dataset=val, data_collator=collator)
     else:
