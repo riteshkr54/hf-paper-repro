@@ -146,7 +146,7 @@ def run(config):
     model.config.use_cache = False
 
     train, val, test = build_dataset(tokenizer, max_len=max_len)
-    arc = load_dataset("allenai/ai2_arc", "challenge")
+    arc = load_dataset("allenai/ai2_arc", "ARC-Challenge")
     arc_test = arc["test"]
     ood = arc_test.map(lambda e: {
         "prompt": f"Question: {e['question']}\nOptions:\n" + "\n".join(
