@@ -132,14 +132,14 @@ def run(config):
     max_steps = config.get("max_steps")
     torch.manual_seed(seed); np.random.seed(seed)
 
-    model_id = "mistralai/Mistral-7B-Instruct-v0.3"
-    quant = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16,
+    model_id = config.get("model_id", "mistralai/Mistral-7B-Instruct-v0.3")
+    quant = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.float16,
                                bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True)
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     tokenizer.pad_token = tokenizer.eos_token
     model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=quant,
                                                  device_map={"": int(device.split(":")[1])},
-                                                 torch_dtype=torch.bfloat16)
+                                                 torch_dtype=torch.float16)
     model = prepare_model_for_kbit_training(model)
     model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05,
                                              bias="none", task_type="CAUSAL_LM"))
@@ -153,13 +153,16 @@ def run(config):
             f"{l}. {t}" for l, t in zip(e["choices"]["label"], e["choices"]["text"])) + "\nAnswer:"})
     ood = ood.select(range(500)) if len(ood) > 500 else ood
 
-    train_args = TrainingArguments(
+    _ta = dict(
         output_dir=f"outs/obqa_{method}",
         per_device_train_batch_size=bs, gradient_accumulation_steps=2,
-        num_train_epochs=num_epochs, max_steps=max_steps,
+        num_train_epochs=num_epochs,
         learning_rate=lr, warmup_ratio=0.05, lr_scheduler_type="cosine",
         logging_steps=20, save_strategy="no", report_to=[],
-        bf16=True, gradient_checkpointing=True, remove_unused_columns=False)
+        fp16=True, gradient_checkpointing=True, remove_unused_columns=False)
+    if max_steps is not None:
+        _ta["max_steps"] = max_steps
+    train_args = TrainingArguments(**_ta)
     collator = dappr_data_collator(tokenizer, max_len=max_len)
     if method == "CE":
         collator = DataCollatorForSeq2Seq(tokenizer, padding="max_length", max_length=max_len)
