@@ -122,8 +122,6 @@ def evaluate(model, tokenizer, test, ood_ds, device, max_len=256):
 
 def run(config):
     device = config.get("device", "cuda:0")
-    device_idx = int(device.split(":")[1])
-    os.environ["CUDA_VISIBLE_DEVICES"] = str(device_idx)
     device = "cuda:0"
     seed = config.get("seed", 42)
     method = config.get("method", "DAPPr")      # DAPPr | CE

@@ -15,6 +15,9 @@ def main():
     with open("config.json") as f:
         config = json.load(f)
     task = config["task"]
+    import os
+    if task == "obqa":
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(int(config.get("device", "cuda:0").split(":")[1]))
     print(f"=== DAPPr repro | task={task} | config={json.dumps(config)} ===", flush=True)
     if task == "claim1_audit":
         import modules.audit_claim1 as m
