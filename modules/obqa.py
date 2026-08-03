@@ -122,6 +122,8 @@ def evaluate(model, tokenizer, test, ood_ds, device, max_len=256):
 
 def run(config):
     device = config.get("device", "cuda:0")
+    device_idx = int(device.split(":")[1])
+    torch.cuda.set_device(device_idx)
     seed = config.get("seed", 42)
     method = config.get("method", "DAPPr")      # DAPPr | CE
     lamb = config.get("lamb", 2e-4)
@@ -138,7 +140,7 @@ def run(config):
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     tokenizer.pad_token = tokenizer.eos_token
     model = AutoModelForCausalLM.from_pretrained(model_id, quantization_config=quant,
-                                                 device_map={"": int(device.split(":")[1])},
+                                                 device_map=device_idx,
                                                  torch_dtype=torch.float16)
     model = prepare_model_for_kbit_training(model)
     model = get_peft_model(model, LoraConfig(r=16, lora_alpha=32, lora_dropout=0.05,
